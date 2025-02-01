@@ -1,4 +1,4 @@
-import { Inter } from "next/font/google";
+import { Plus_Jakarta_Sans } from "next/font/google";
 import {
   ReviverProvider,
   GlobalOverlay,
@@ -7,12 +7,19 @@ import {
 } from "ai-reviver";
 import "./globals.css";
 import { Toaster } from "sonner";
+import { ThemeProvider } from "@/components/theme-provider";
 
-const inter = Inter({ subsets: ["latin"] });
+const plusJakarta = Plus_Jakarta_Sans({ subsets: ["latin"] });
 
 const reviverConfig: Partial<ReviverConfig> = {
   vivify: {
-    actions: ["summarize", "explain", "keyPoints"] as ReviverAction[],
+    actions: [
+      "summarize",
+      "explain",
+      "keyPoints",
+      "enhance",
+      "simplify",
+    ] as ReviverAction[],
     contextMenu: true,
     hoverCard: true,
   },
@@ -23,8 +30,19 @@ const reviverConfig: Partial<ReviverConfig> = {
   textArea: {
     suggestions: true,
     autoComplete: true,
-    enhancementActions: ["rewrite", "suggestions"] as ReviverAction[],
+    enhancementActions: [
+      "rewrite",
+      "suggestions",
+      "improve",
+      "analyze",
+    ] as ReviverAction[],
   },
+};
+
+export const metadata = {
+  title: "Reviver - AI-Powered Content Enhancement",
+  description:
+    "Transform your content with AI-powered suggestions, analysis, and improvements.",
 };
 
 export default function RootLayout({
@@ -33,15 +51,22 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="scroll-smooth">
+    <html lang="en" className="scroll-smooth" suppressHydrationWarning>
       <body
-        className={`${inter.className} bg-gray-50 text-gray-900 antialiased`}
+        className={`${plusJakarta.className} min-h-screen bg-background antialiased`}
       >
-        <ReviverProvider config={reviverConfig}>
-          {children}
-          <GlobalOverlay />
-        </ReviverProvider>
-        <Toaster />
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <ReviverProvider config={reviverConfig}>
+            {children}
+            <GlobalOverlay />
+          </ReviverProvider>
+          <Toaster position="top-center" expand={true} richColors />
+        </ThemeProvider>
       </body>
     </html>
   );

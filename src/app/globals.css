@@ -13,7 +13,7 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
  
-    --primary: 222.2 47.4% 11.2%;
+    --primary: 262.1 83.3% 57.8%;
     --primary-foreground: 210 40% 98%;
  
     --secondary: 210 40% 96.1%;
@@ -30,9 +30,11 @@
 
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --ring: 262.1 83.3% 57.8%;
  
-    --radius: 0.5rem;
+    --radius: 0.75rem;
+
+    --code-bg: #011627;
   }
  
   .dark {
@@ -45,8 +47,8 @@
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
  
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary: 263.4 70% 50.4%;
+    --primary-foreground: 210 40% 98%;
  
     --secondary: 217.2 32.6% 17.5%;
     --secondary-foreground: 210 40% 98%;
@@ -62,7 +64,9 @@
  
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+    --ring: 263.4 70% 50.4%;
+
+    --code-bg: #011627;
   }
 }
  
@@ -73,4 +77,43 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+@layer utilities {
+  .bg-grid-white\/\[0\.2\] {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' width='32' height='32' fill='none' stroke='rgb(255 255 255 / 0.2)'%3e%3cpath d='M0 .5H31.5V32'/%3e%3c/svg%3e");
+  }
+}
+
+/* Reviver Component Styles */
+.reviver-textarea {
+  @apply w-full min-h-[150px] rounded-lg border bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
+}
+
+.reviver-drawer {
+  @apply fixed inset-x-0 bottom-0 z-50 mt-24 flex h-auto flex-col rounded-t-[10px] border bg-background;
+}
+
+.reviver-drawer-overlay {
+  @apply fixed inset-0 z-50 bg-black/80;
+}
+
+.reviver-drawer-content {
+  @apply relative flex flex-col overflow-y-auto rounded-t-[10px] bg-background p-4;
+}
+
+.reviver-hover-card {
+  @apply z-50 w-64 rounded-lg border bg-popover p-4 text-popover-foreground shadow-md outline-none;
+}
+
+.reviver-context-menu {
+  @apply z-50 min-w-[8rem] overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-lg;
+}
+
+.reviver-context-menu-item {
+  @apply relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground;
+}
+
+.reviver-context-menu-separator {
+  @apply -mx-1 my-1 h-px bg-border;
 }

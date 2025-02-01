@@ -7,8 +7,16 @@ export default {
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
     "./packages/reviver/src/**/*.{js,ts,jsx,tsx,mdx}",
+    "./packages/ai-reviver/src/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
+    container: {
+      center: true,
+      padding: "2rem",
+      screens: {
+        "2xl": "1400px",
+      },
+    },
     extend: {
       colors: {
         background: "hsl(var(--background))",
@@ -63,13 +71,62 @@ export default {
           "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
       },
       keyframes: {
+        "accordion-down": {
+          from: { height: "0" },
+          to: { height: "var(--radix-accordion-content-height)" },
+        },
+        "accordion-up": {
+          from: { height: "var(--radix-accordion-content-height)" },
+          to: { height: "0" },
+        },
         gradient: {
           "0%, 100%": { backgroundPosition: "0% 50%" },
           "50%": { backgroundPosition: "100% 50%" },
         },
       },
       animation: {
+        "accordion-down": "accordion-down 0.2s ease-out",
+        "accordion-up": "accordion-up 0.2s ease-out",
         gradient: "gradient 3s ease-in-out infinite",
+      },
+      typography: {
+        DEFAULT: {
+          css: {
+            maxWidth: "none",
+            color: "hsl(var(--foreground))",
+            hr: {
+              borderColor: "hsl(var(--border))",
+              marginTop: "3em",
+              marginBottom: "3em",
+            },
+            "h1, h2, h3, h4": {
+              color: "hsl(var(--foreground))",
+            },
+            "ul > li::marker": {
+              color: "hsl(var(--muted-foreground))",
+            },
+            "ol > li::marker": {
+              color: "hsl(var(--muted-foreground))",
+            },
+            code: {
+              color: "hsl(var(--foreground))",
+            },
+            "pre code": {
+              color: "hsl(var(--foreground))",
+              backgroundColor: "transparent",
+            },
+            pre: {
+              backgroundColor: "hsl(var(--muted))",
+              borderRadius: "var(--radius)",
+            },
+            strong: {
+              color: "hsl(var(--foreground))",
+            },
+            blockquote: {
+              color: "hsl(var(--muted-foreground))",
+            },
+          },
+        },
       },
     },
   },
