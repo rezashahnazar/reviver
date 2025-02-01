@@ -119,7 +119,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 💫 Acknowledgments
 
-- [Vercel](https://vercel.com) for the amazing deployment platform
+- [Next.js](https://nextjs.org) and [Vercel AI SDK](https://sdk.vercel.ai/) for the powerful React framework and AI utilities
 - [OpenAI](https://openai.com) for the powerful AI capabilities
 - [Tailwind CSS](https://tailwindcss.com) for the beautiful styling system
 - [Radix UI](https://www.radix-ui.com) for the accessible UI components
