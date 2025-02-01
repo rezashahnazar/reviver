@@ -34,8 +34,28 @@ export function ReviverDrawer({
   const [localStreamResult, setLocalStreamResult] = useState<ReactNode>(null);
   const [shouldShowLoading, setShouldShowLoading] = useState(false);
   const hasToastShown = useRef(false);
-  const originalClickHandler = useRef<Function | null>(null);
   const [isOpen, setIsOpen] = useState(false);
+  const originalHandlerRef = useRef<{
+    handler: Function | null;
+    element: HTMLElement | null;
+  }>({ handler: null, element: null });
+
+  // Extract the original click handler from the trigger
+  useEffect(() => {
+    if (!React.isValidElement(trigger)) return;
+
+    const triggerElement = trigger as React.ReactElement<{
+      onClick?: Function;
+      disabled?: boolean;
+    }>;
+
+    if (triggerElement.props.onClick) {
+      originalHandlerRef.current = {
+        handler: triggerElement.props.onClick,
+        element: null, // We'll set this when clicked
+      };
+    }
+  }, [trigger]);
 
   // Capture the original click handler from the trigger
   const wrappedTrigger = useMemo(() => {
@@ -43,19 +63,22 @@ export function ReviverDrawer({
 
     const triggerElement = trigger as React.ReactElement<{
       onClick?: Function;
+      disabled?: boolean;
     }>;
-    const originalOnClick = triggerElement.props.onClick;
-    if (!originalOnClick) return trigger;
-
-    originalClickHandler.current = originalOnClick;
 
     return React.cloneElement(triggerElement, {
       onClick: (e: React.MouseEvent<HTMLElement>) => {
-        // Don't prevent default - let the Drawer.Trigger handle the click
-        originalOnClick(e);
+        // Update the element reference when clicked
+        if (originalHandlerRef.current.handler) {
+          originalHandlerRef.current.element = e.currentTarget;
+        }
+        // Don't call the original handler here, just open the drawer
+        setIsOpen(true);
       },
+      // Pass through the disabled state
+      disabled: triggerElement.props.disabled || isActionLoading,
     });
-  }, [trigger]);
+  }, [trigger, isActionLoading]);
 
   // Handle loading state with fade
   useEffect(() => {
@@ -89,35 +112,41 @@ export function ReviverDrawer({
   };
 
   const handleAction = async () => {
+    const { handler, element } = originalHandlerRef.current;
+
+    if (!handler) {
+      toast.error("Action not available", {
+        description: "The action handler was not properly initialized.",
+      });
+      return;
+    }
+
     try {
-      console.log("Action started");
       setIsActionLoading(true);
 
-      if (!originalClickHandler.current) {
-        console.log("No click handler found on trigger");
-        return;
-      }
+      // Create a synthetic event that matches the original click event
+      const syntheticEvent = {
+        currentTarget: element || document.createElement("button"),
+        preventDefault: () => {},
+        stopPropagation: () => {},
+        type: "click",
+      };
 
-      try {
-        console.log("Calling original click handler...");
-        await Promise.resolve(originalClickHandler.current());
+      // Call the original handler with the synthetic event
+      const result = await Promise.resolve(handler(syntheticEvent));
 
-        console.log("Action completed successfully");
-        toast.success("Successfully published!", {
-          description: "Your content has been published successfully.",
-        });
+      // Only show success toast and close if the action succeeds
+      toast.success("Successfully published!", {
+        description: "Your content has been published successfully.",
+      });
 
-        // Reset states and close modal
-        clearContent();
-        setIsOpen(false);
-      } catch (actionError: any) {
-        console.error("Action error details:", actionError);
-        if (actionError?.stack)
-          console.error("Action error stack:", actionError.stack);
-        throw actionError;
-      }
+      // Reset states and close modal
+      clearContent();
+      setIsOpen(false);
+
+      return result;
     } catch (error: any) {
-      console.log("Action failed with error:", error);
+      console.error("Action failed:", error);
       setIsActionLoading(false);
       setShouldShowLoading(false);
 
@@ -125,6 +154,7 @@ export function ReviverDrawer({
         description:
           error?.message || "An error occurred while publishing your content.",
       });
+      throw error; // Re-throw to allow error handling up the chain
     }
   };
 
@@ -133,7 +163,9 @@ export function ReviverDrawer({
       open={isOpen}
       onOpenChange={(open) => {
         setIsOpen(open);
-        if (!open) clearContent();
+        if (!open) {
+          clearContent();
+        }
       }}
       shouldScaleBackground={shouldScaleBackground}
     >
@@ -192,7 +224,7 @@ export function ReviverDrawer({
                       <div
                         className={cn(
                           "absolute inset-0 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm rounded-lg z-10",
-                          "transition-opacity duration-1000 ease-in-out", // 1 second fade
+                          "transition-opacity duration-1000 ease-in-out",
                           shouldShowLoading
                             ? "opacity-100"
                             : "opacity-0 pointer-events-none"

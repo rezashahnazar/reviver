@@ -1,6 +1,6 @@
 {
   "name": "ai-reviver",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A React/Next.js 15 library for easily adding generative AI features without replacing your existing UI",
   "main": "dist/index.js",
   "module": "dist/index.mjs",

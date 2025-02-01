@@ -111,7 +111,11 @@ export function ReviverTextArea({
 
                 // Show completion immediately for any non-empty chunk
                 if (buffer) {
-                  setInlineCompletion(newValue + buffer);
+                  // Check if we're in the middle of a word
+                  const lastChar = newValue[newValue.length - 1];
+                  const isInWord = lastChar && /\w/.test(lastChar);
+                  const completion = isInWord ? buffer : ` ${buffer}`;
+                  setInlineCompletion(newValue + completion);
                 }
               }
 
@@ -283,7 +287,7 @@ export function ReviverTextArea({
             onChange={handleChange}
             onKeyDown={handleKeyDown}
             className={cn(
-              "w-full h-full px-3 py-2 rounded-lg",
+              "w-full h-full px-3 py-2 pb-12 rounded-lg ",
               "border border-gray-300",
               "focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 focus:ring-offset-0",
               "transition duration-150",
@@ -307,7 +311,7 @@ export function ReviverTextArea({
               }}
             >
               <div
-                className="px-3 py-2 h-full"
+                className="px-3 py-2 pb-12 h-full"
                 style={{
                   whiteSpace: "pre-wrap",
                   wordBreak: "break-word",
@@ -316,68 +320,67 @@ export function ReviverTextArea({
               >
                 <span className="invisible">{value}</span>
                 <span className="text-gray-400/70">
-                  {inlineCompletion.slice(String(value).length)}
+                  {inlineCompletion?.slice(String(value).length)}
                 </span>
               </div>
             </div>
           )}
-        </div>
 
-        {/* Action buttons and Tab tip */}
-        <div className="absolute -bottom-10 right-0 flex items-center gap-4">
-          {inlineCompletion && (
-            <p className="text-xs text-gray-500">
-              Press{" "}
-              <kbd className="px-1.5 py-0.5 text-xs font-semibold text-gray-800 bg-gray-100 border border-gray-200 rounded">
-                Tab
-              </kbd>{" "}
-              to accept
-            </p>
-          )}
-          <div className="flex gap-2">
-            <motion.button
-              type="button"
-              onClick={handleRewrite}
-              disabled={
-                isPending ||
-                !value ||
-                typeof value !== "string" ||
-                !value.trim()
-              }
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className={cn(
-                "p-2 rounded-full",
-                "bg-purple-100 text-purple-700",
-                "hover:bg-purple-200",
-                "disabled:opacity-50 disabled:cursor-not-allowed",
-                "transition duration-150"
-              )}
-            >
-              <ReloadIcon className="w-4 h-4" />
-            </motion.button>
+          <div className="absolute bottom-3 right-3 flex items-center gap-4 bg-white/80 backdrop-blur-sm rounded-md p-1">
+            {inlineCompletion && (
+              <p className="text-xs text-gray-500">
+                Press{" "}
+                <kbd className="px-1.5 py-0.5 text-xs font-semibold text-gray-800 bg-gray-100 border border-gray-200 rounded">
+                  Tab
+                </kbd>{" "}
+                to accept
+              </p>
+            )}
+            <div className="flex gap-2">
+              <motion.button
+                type="button"
+                onClick={handleRewrite}
+                disabled={
+                  isPending ||
+                  !value ||
+                  typeof value !== "string" ||
+                  !value.trim()
+                }
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className={cn(
+                  "p-1.5 rounded-full",
+                  "bg-purple-100 text-purple-700",
+                  "hover:bg-purple-200",
+                  "disabled:opacity-50 disabled:cursor-not-allowed",
+                  "transition duration-150"
+                )}
+              >
+                <ReloadIcon className="w-3.5 h-3.5" />
+              </motion.button>
 
-            <motion.button
-              type="button"
-              onClick={handleSuggest}
-              disabled={
-                isPending ||
-                !value ||
-                typeof value !== "string" ||
-                !value.trim()
-              }
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className={cn(
-                "p-2 rounded-full",
-                "bg-purple-100 text-purple-700",
-                "hover:bg-purple-200",
-                "disabled:opacity-50 disabled:cursor-not-allowed",
-                "transition duration-150"
-              )}
-            >
-              <MagicWandIcon className="w-4 h-4" />
-            </motion.button>
+              <motion.button
+                type="button"
+                onClick={handleSuggest}
+                disabled={
+                  isPending ||
+                  !value ||
+                  typeof value !== "string" ||
+                  !value.trim()
+                }
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className={cn(
+                  "p-1.5 rounded-full",
+                  "bg-purple-100 text-purple-700",
+                  "hover:bg-purple-200",
+                  "disabled:opacity-50 disabled:cursor-not-allowed",
+                  "transition duration-150"
+                )}
+              >
+                <MagicWandIcon className="w-3.5 h-3.5" />
+              </motion.button>
+            </div>
           </div>
         </div>
       </div>
@@ -389,45 +392,45 @@ export function ReviverTextArea({
         </div>
       )}
 
-      {/* Suggestions */}
+      {/* Suggestions - More Compact Version */}
       <AnimatePresence>
         {suggestions.length > 0 && (
           <motion.div
-            initial={{ opacity: 0, y: 10 }}
+            initial={{ opacity: 0, y: 5 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 10 }}
-            className="mt-4 space-y-2"
+            exit={{ opacity: 0, y: 5 }}
+            className="mt-2 flex flex-col gap-1.5"
           >
             {suggestions.map((suggestion, index) => (
               <motion.div
                 key={index}
-                initial={{ opacity: 0, x: -10 }}
+                initial={{ opacity: 0, x: -5 }}
                 animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -10 }}
+                exit={{ opacity: 0, x: -5 }}
                 transition={{ delay: index * 0.1 }}
                 onClick={() => handleSuggestionClick(suggestion.content)}
                 className={cn(
-                  "p-3 rounded-lg cursor-pointer",
-                  "bg-white border border-gray-200",
+                  "py-1.5 px-2 rounded-md cursor-pointer",
+                  "bg-white/50 border border-gray-200",
                   "hover:bg-gray-50",
-                  "transition duration-150"
+                  "transition duration-150",
+                  "flex items-center gap-2"
                 )}
               >
-                <div className="flex items-center justify-between mb-2">
-                  <span
-                    className={cn(
-                      "text-xs font-medium px-2 py-1 rounded",
-                      suggestion.title === "HIGH" && "bg-red-100 text-red-700",
-                      suggestion.title === "MEDIUM" &&
-                        "bg-yellow-100 text-yellow-700",
-                      suggestion.title === "LOW" &&
-                        "bg-green-100 text-green-700"
-                    )}
-                  >
-                    {suggestion.title}
-                  </span>
-                </div>
-                <p className="text-sm text-gray-600">{suggestion.content}</p>
+                <span
+                  className={cn(
+                    "text-[10px] font-medium px-1.5 py-0.5 rounded",
+                    suggestion.title === "HIGH" && "bg-red-100 text-red-700",
+                    suggestion.title === "MEDIUM" &&
+                      "bg-yellow-100 text-yellow-700",
+                    suggestion.title === "LOW" && "bg-green-100 text-green-700"
+                  )}
+                >
+                  {suggestion.title}
+                </span>
+                <p className="text-xs text-gray-600 line-clamp-1">
+                  {suggestion.content}
+                </p>
               </motion.div>
             ))}
           </motion.div>

@@ -12480,7 +12480,10 @@ function ReviverTextArea({
                 const chunk = typeof value2 === "string" ? value2 : new TextDecoder().decode(value2);
                 buffer += chunk;
                 if (buffer) {
-                  setInlineCompletion(newValue + buffer);
+                  const lastChar = newValue[newValue.length - 1];
+                  const isInWord = lastChar && /\w/.test(lastChar);
+                  const completion = isInWord ? buffer : ` ${buffer}`;
+                  setInlineCompletion(newValue + completion);
                 }
               }
             } finally {
@@ -12618,61 +12621,59 @@ function ReviverTextArea({
   }, []);
   return /* @__PURE__ */ jsxs4("div", { className: "space-y-2", style: { marginBottom: "2rem" }, children: [
     /* @__PURE__ */ jsx5("div", { className: "space-y-1", children: label && /* @__PURE__ */ jsx5("label", { className: "block text-sm font-medium text-gray-700", children: label }) }),
-    /* @__PURE__ */ jsxs4("div", { className: "relative", children: [
-      /* @__PURE__ */ jsxs4("div", { className: "relative font-mono", children: [
-        /* @__PURE__ */ jsx5(
-          "textarea",
-          {
-            ...props,
-            ref: textareaRef,
-            name: name2,
-            value,
-            onChange: handleChange,
-            onKeyDown: handleKeyDown,
-            className: cn(
-              "w-full h-full px-3 py-2 rounded-lg",
-              "border border-gray-300",
-              "focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 focus:ring-offset-0",
-              "transition duration-150",
-              "resize-y",
-              "font-mono",
-              "bg-transparent",
-              className
-            ),
-            style: {
-              caretColor: "black",
-              height: "150px"
+    /* @__PURE__ */ jsx5("div", { className: "relative", children: /* @__PURE__ */ jsxs4("div", { className: "relative font-mono", children: [
+      /* @__PURE__ */ jsx5(
+        "textarea",
+        {
+          ...props,
+          ref: textareaRef,
+          name: name2,
+          value,
+          onChange: handleChange,
+          onKeyDown: handleKeyDown,
+          className: cn(
+            "w-full h-full px-3 py-2 pb-12 rounded-lg ",
+            "border border-gray-300",
+            "focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 focus:ring-offset-0",
+            "transition duration-150",
+            "resize-y",
+            "font-mono",
+            "bg-transparent",
+            className
+          ),
+          style: {
+            caretColor: "black",
+            height: "150px"
+          }
+        }
+      ),
+      inlineCompletion && /* @__PURE__ */ jsx5(
+        "div",
+        {
+          "aria-hidden": "true",
+          className: "absolute top-0 inset-0 pointer-events-none",
+          style: {
+            overflow: "hidden",
+            height: "100%"
+          },
+          children: /* @__PURE__ */ jsxs4(
+            "div",
+            {
+              className: "px-3 py-2 pb-12 h-full",
+              style: {
+                whiteSpace: "pre-wrap",
+                wordBreak: "break-word",
+                overflowWrap: "break-word"
+              },
+              children: [
+                /* @__PURE__ */ jsx5("span", { className: "invisible", children: value }),
+                /* @__PURE__ */ jsx5("span", { className: "text-gray-400/70", children: inlineCompletion?.slice(String(value).length) })
+              ]
             }
-          }
-        ),
-        inlineCompletion && /* @__PURE__ */ jsx5(
-          "div",
-          {
-            "aria-hidden": "true",
-            className: "absolute top-0 inset-0 pointer-events-none",
-            style: {
-              overflow: "hidden",
-              height: "100%"
-            },
-            children: /* @__PURE__ */ jsxs4(
-              "div",
-              {
-                className: "px-3 py-2 h-full",
-                style: {
-                  whiteSpace: "pre-wrap",
-                  wordBreak: "break-word",
-                  overflowWrap: "break-word"
-                },
-                children: [
-                  /* @__PURE__ */ jsx5("span", { className: "invisible", children: value }),
-                  /* @__PURE__ */ jsx5("span", { className: "text-gray-400/70", children: inlineCompletion.slice(String(value).length) })
-                ]
-              }
-            )
-          }
-        )
-      ] }),
-      /* @__PURE__ */ jsxs4("div", { className: "absolute -bottom-10 right-0 flex items-center gap-4", children: [
+          )
+        }
+      ),
+      /* @__PURE__ */ jsxs4("div", { className: "absolute bottom-3 right-3 flex items-center gap-4 bg-white/80 backdrop-blur-sm rounded-md p-1", children: [
         inlineCompletion && /* @__PURE__ */ jsxs4("p", { className: "text-xs text-gray-500", children: [
           "Press",
           " ",
@@ -12690,13 +12691,13 @@ function ReviverTextArea({
               whileHover: { scale: 1.05 },
               whileTap: { scale: 0.95 },
               className: cn(
-                "p-2 rounded-full",
+                "p-1.5 rounded-full",
                 "bg-purple-100 text-purple-700",
                 "hover:bg-purple-200",
                 "disabled:opacity-50 disabled:cursor-not-allowed",
                 "transition duration-150"
               ),
-              children: /* @__PURE__ */ jsx5(ReloadIcon, { className: "w-4 h-4" })
+              children: /* @__PURE__ */ jsx5(ReloadIcon, { className: "w-3.5 h-3.5" })
             }
           ),
           /* @__PURE__ */ jsx5(
@@ -12708,54 +12709,55 @@ function ReviverTextArea({
               whileHover: { scale: 1.05 },
               whileTap: { scale: 0.95 },
               className: cn(
-                "p-2 rounded-full",
+                "p-1.5 rounded-full",
                 "bg-purple-100 text-purple-700",
                 "hover:bg-purple-200",
                 "disabled:opacity-50 disabled:cursor-not-allowed",
                 "transition duration-150"
               ),
-              children: /* @__PURE__ */ jsx5(MagicWandIcon2, { className: "w-4 h-4" })
+              children: /* @__PURE__ */ jsx5(MagicWandIcon2, { className: "w-3.5 h-3.5" })
             }
           )
         ] })
       ] })
-    ] }),
+    ] }) }),
     error && /* @__PURE__ */ jsx5("div", { className: "mt-2 p-2 text-sm text-red-600 bg-red-50 rounded-lg", children: error }),
     /* @__PURE__ */ jsx5(AnimatePresence3, { children: suggestions.length > 0 && /* @__PURE__ */ jsx5(
       motion3.div,
       {
-        initial: { opacity: 0, y: 10 },
+        initial: { opacity: 0, y: 5 },
         animate: { opacity: 1, y: 0 },
-        exit: { opacity: 0, y: 10 },
-        className: "mt-4 space-y-2",
+        exit: { opacity: 0, y: 5 },
+        className: "mt-2 flex flex-col gap-1.5",
         children: suggestions.map((suggestion, index2) => /* @__PURE__ */ jsxs4(
           motion3.div,
           {
-            initial: { opacity: 0, x: -10 },
+            initial: { opacity: 0, x: -5 },
             animate: { opacity: 1, x: 0 },
-            exit: { opacity: 0, x: -10 },
+            exit: { opacity: 0, x: -5 },
             transition: { delay: index2 * 0.1 },
             onClick: () => handleSuggestionClick(suggestion.content),
             className: cn(
-              "p-3 rounded-lg cursor-pointer",
-              "bg-white border border-gray-200",
+              "py-1.5 px-2 rounded-md cursor-pointer",
+              "bg-white/50 border border-gray-200",
               "hover:bg-gray-50",
-              "transition duration-150"
+              "transition duration-150",
+              "flex items-center gap-2"
             ),
             children: [
-              /* @__PURE__ */ jsx5("div", { className: "flex items-center justify-between mb-2", children: /* @__PURE__ */ jsx5(
+              /* @__PURE__ */ jsx5(
                 "span",
                 {
                   className: cn(
-                    "text-xs font-medium px-2 py-1 rounded",
+                    "text-[10px] font-medium px-1.5 py-0.5 rounded",
                     suggestion.title === "HIGH" && "bg-red-100 text-red-700",
                     suggestion.title === "MEDIUM" && "bg-yellow-100 text-yellow-700",
                     suggestion.title === "LOW" && "bg-green-100 text-green-700"
                   ),
                   children: suggestion.title
                 }
-              ) }),
-              /* @__PURE__ */ jsx5("p", { className: "text-sm text-gray-600", children: suggestion.content })
+              ),
+              /* @__PURE__ */ jsx5("p", { className: "text-xs text-gray-600 line-clamp-1", children: suggestion.content })
             ]
           },
           index2
@@ -12866,6 +12868,78 @@ function GlobalOverlay({ className }) {
         className
       ),
       children: [
+        /* @__PURE__ */ jsx6("svg", { className: "fixed inset-0 w-0 h-0", children: /* @__PURE__ */ jsxs5("defs", { children: [
+          /* @__PURE__ */ jsxs5("filter", { id: "magical-flow-primary", children: [
+            /* @__PURE__ */ jsx6(
+              "feTurbulence",
+              {
+                type: "fractalNoise",
+                baseFrequency: "0.008 0.006",
+                numOctaves: "4",
+                seed: "1",
+                children: /* @__PURE__ */ jsx6(
+                  "animate",
+                  {
+                    attributeName: "baseFrequency",
+                    dur: "30s",
+                    keyTimes: "0;0.25;0.5;0.75;1",
+                    values: "0.008 0.006;0.012 0.008;0.008 0.01;0.01 0.008;0.008 0.006",
+                    repeatCount: "indefinite"
+                  }
+                )
+              }
+            ),
+            /* @__PURE__ */ jsx6("feDisplacementMap", { in: "SourceGraphic", scale: "120" }),
+            /* @__PURE__ */ jsx6("feGaussianBlur", { stdDeviation: "4" }),
+            /* @__PURE__ */ jsx6(
+              "feColorMatrix",
+              {
+                type: "matrix",
+                values: "1 0 0 0 0\n                          0 1 0 0 0\n                          0 0 1 0 0\n                          0 0 0 0.8 0"
+              }
+            )
+          ] }),
+          /* @__PURE__ */ jsxs5("filter", { id: "magical-flow-secondary", children: [
+            /* @__PURE__ */ jsx6(
+              "feTurbulence",
+              {
+                type: "turbulence",
+                baseFrequency: "0.015 0.012",
+                numOctaves: "3",
+                seed: "2",
+                children: /* @__PURE__ */ jsx6(
+                  "animate",
+                  {
+                    attributeName: "baseFrequency",
+                    dur: "25s",
+                    keyTimes: "0;0.33;0.66;1",
+                    values: "0.015 0.012;0.008 0.015;0.012 0.008;0.015 0.012",
+                    repeatCount: "indefinite"
+                  }
+                )
+              }
+            ),
+            /* @__PURE__ */ jsx6("feDisplacementMap", { in: "SourceGraphic", scale: "40" }),
+            /* @__PURE__ */ jsx6("feGaussianBlur", { stdDeviation: "2" }),
+            /* @__PURE__ */ jsx6(
+              "feColorMatrix",
+              {
+                type: "matrix",
+                values: "1 0 0 0 0\n                          0 1 0 0 0\n                          0 0 1 0 0\n                          0 0 0 0.6 0"
+              }
+            )
+          ] }),
+          /* @__PURE__ */ jsxs5("filter", { id: "magical-glow", children: [
+            /* @__PURE__ */ jsx6("feGaussianBlur", { stdDeviation: "6" }),
+            /* @__PURE__ */ jsx6(
+              "feColorMatrix",
+              {
+                type: "matrix",
+                values: "1 0 0 0 0.2\n                          0 1 0 0 0.1\n                          0 0 1 0 0.3\n                          0 0 0 1 0"
+              }
+            )
+          ] })
+        ] }) }),
         /* @__PURE__ */ jsx6(
           motion4.div,
           {
@@ -12874,27 +12948,93 @@ function GlobalOverlay({ className }) {
               backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"]
             },
             transition: {
-              duration: 5,
+              duration: 8,
               repeat: Infinity,
-              ease: "linear"
+              ease: "easeInOut"
             },
             style: {
-              backgroundSize: "200% 200%"
+              backgroundSize: "200% 200%",
+              maskImage: `radial-gradient(
+                ellipse 95% 85% at 50% 50%,
+                transparent 30%,
+                rgba(0, 0, 0, 0.2) 45%,
+                rgba(0, 0, 0, 0.4) 50%,
+                black 65%
+              )`,
+              WebkitMaskImage: `radial-gradient(
+                ellipse 95% 85% at 50% 50%,
+                transparent 30%,
+                rgba(0, 0, 0, 0.2) 45%,
+                rgba(0, 0, 0, 0.4) 50%,
+                black 65%
+              )`,
+              filter: "url(#magical-flow-primary)"
             }
           }
         ),
         /* @__PURE__ */ jsx6(
           motion4.div,
           {
-            className: "absolute inset-0 bg-gradient-to-r from-purple-500/10 via-pink-500/10 to-blue-500/10",
+            className: "absolute inset-0 bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-pink-500/20",
             animate: {
-              scale: [1, 1.2, 1],
-              opacity: [0.3, 0.1, 0.3]
+              backgroundPosition: ["100% 50%", "0% 50%", "100% 50%"]
             },
             transition: {
-              duration: 2,
+              duration: 12,
               repeat: Infinity,
               ease: "easeInOut"
+            },
+            style: {
+              backgroundSize: "200% 200%",
+              maskImage: `radial-gradient(
+                ellipse 95% 85% at 50% 50%,
+                transparent 30%,
+                rgba(0, 0, 0, 0.2) 45%,
+                rgba(0, 0, 0, 0.4) 50%,
+                black 65%
+              )`,
+              WebkitMaskImage: `radial-gradient(
+                ellipse 95% 85% at 50% 50%,
+                transparent 30%,
+                rgba(0, 0, 0, 0.2) 45%,
+                rgba(0, 0, 0, 0.4) 50%,
+                black 65%
+              )`,
+              filter: "url(#magical-flow-secondary)",
+              mixBlendMode: "soft-light"
+            }
+          }
+        ),
+        /* @__PURE__ */ jsx6(
+          motion4.div,
+          {
+            className: "absolute inset-0 bg-gradient-to-r from-purple-400/10 via-pink-300/10 to-blue-400/10",
+            animate: {
+              scale: [1, 1.05, 1],
+              opacity: [0.3, 0.15, 0.3]
+            },
+            transition: {
+              duration: 4,
+              repeat: Infinity,
+              ease: "easeInOut"
+            },
+            style: {
+              maskImage: `radial-gradient(
+                ellipse 95% 85% at 50% 50%,
+                transparent 30%,
+                rgba(0, 0, 0, 0.2) 45%,
+                rgba(0, 0, 0, 0.4) 50%,
+                black 65%
+              )`,
+              WebkitMaskImage: `radial-gradient(
+                ellipse 95% 85% at 50% 50%,
+                transparent 30%,
+                rgba(0, 0, 0, 0.2) 45%,
+                rgba(0, 0, 0, 0.4) 50%,
+                black 65%
+              )`,
+              filter: "url(#magical-glow)",
+              mixBlendMode: "screen"
             }
           }
         )
@@ -16701,20 +16841,33 @@ function ReviverDrawer({
   const [localStreamResult, setLocalStreamResult] = useState15(null);
   const [shouldShowLoading, setShouldShowLoading] = useState15(false);
   const hasToastShown = useRef12(false);
-  const originalClickHandler = useRef12(null);
   const [isOpen, setIsOpen] = useState15(false);
+  const originalHandlerRef = useRef12({ handler: null, element: null });
+  useEffect16(() => {
+    if (!React27.isValidElement(trigger)) return;
+    const triggerElement = trigger;
+    if (triggerElement.props.onClick) {
+      originalHandlerRef.current = {
+        handler: triggerElement.props.onClick,
+        element: null
+        // We'll set this when clicked
+      };
+    }
+  }, [trigger]);
   const wrappedTrigger = useMemo5(() => {
     if (!React27.isValidElement(trigger)) return trigger;
     const triggerElement = trigger;
-    const originalOnClick = triggerElement.props.onClick;
-    if (!originalOnClick) return trigger;
-    originalClickHandler.current = originalOnClick;
     return React27.cloneElement(triggerElement, {
       onClick: (e) => {
-        originalOnClick(e);
-      }
+        if (originalHandlerRef.current.handler) {
+          originalHandlerRef.current.element = e.currentTarget;
+        }
+        setIsOpen(true);
+      },
+      // Pass through the disabled state
+      disabled: triggerElement.props.disabled || isActionLoading
     });
-  }, [trigger]);
+  }, [trigger, isActionLoading]);
   useEffect16(() => {
     if (isProcessing || isActionLoading) {
       setShouldShowLoading(true);
@@ -16742,35 +16895,38 @@ function ReviverDrawer({
     onClearResults?.();
   };
   const handleAction = async () => {
+    const { handler, element: element2 } = originalHandlerRef.current;
+    if (!handler) {
+      ue.error("Action not available", {
+        description: "The action handler was not properly initialized."
+      });
+      return;
+    }
     try {
-      console.log("Action started");
       setIsActionLoading(true);
-      if (!originalClickHandler.current) {
-        console.log("No click handler found on trigger");
-        return;
-      }
-      try {
-        console.log("Calling original click handler...");
-        await Promise.resolve(originalClickHandler.current());
-        console.log("Action completed successfully");
-        ue.success("Successfully published!", {
-          description: "Your content has been published successfully."
-        });
-        clearContent();
-        setIsOpen(false);
-      } catch (actionError) {
-        console.error("Action error details:", actionError);
-        if (actionError?.stack)
-          console.error("Action error stack:", actionError.stack);
-        throw actionError;
-      }
+      const syntheticEvent = {
+        currentTarget: element2 || document.createElement("button"),
+        preventDefault: () => {
+        },
+        stopPropagation: () => {
+        },
+        type: "click"
+      };
+      const result = await Promise.resolve(handler(syntheticEvent));
+      ue.success("Successfully published!", {
+        description: "Your content has been published successfully."
+      });
+      clearContent();
+      setIsOpen(false);
+      return result;
     } catch (error) {
-      console.log("Action failed with error:", error);
+      console.error("Action failed:", error);
       setIsActionLoading(false);
       setShouldShowLoading(false);
       ue.error("Failed to publish", {
         description: error?.message || "An error occurred while publishing your content."
       });
+      throw error;
     }
   };
   return /* @__PURE__ */ jsxs7(
@@ -16779,7 +16935,9 @@ function ReviverDrawer({
       open: isOpen,
       onOpenChange: (open) => {
         setIsOpen(open);
-        if (!open) clearContent();
+        if (!open) {
+          clearContent();
+        }
       },
       shouldScaleBackground,
       children: [
@@ -16826,7 +16984,6 @@ function ReviverDrawer({
                       className: cn(
                         "absolute inset-0 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm rounded-lg z-10",
                         "transition-opacity duration-1000 ease-in-out",
-                        // 1 second fade
                         shouldShowLoading ? "opacity-100" : "opacity-0 pointer-events-none"
                       ),
                       children: /* @__PURE__ */ jsx13(
