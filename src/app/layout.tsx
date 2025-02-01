@@ -4,7 +4,7 @@ import {
   GlobalOverlay,
   type ReviverConfig,
   type ReviverAction,
-} from "@rezashahnazar/reviver";
+} from "ai-reviver";
 import "./globals.css";
 import { Toaster } from "sonner";
 

@@ -8,7 +8,7 @@ import {
   ReviverDrawer,
   getSuggestions,
   rewriteContent,
-} from "@rezashahnazar/reviver";
+} from "ai-reviver";
 import { toast } from "sonner";
 import { readStreamableValue } from "ai/rsc";
 
@@ -23,14 +23,16 @@ export default function HomePage() {
 
   const handleGetSuggestions = async (
     content: string,
-    options?: Record<string, any>
+    options?: Record<string, unknown>
   ) => {
     try {
       setIsProcessing(true);
       return await getSuggestions(content, options);
-    } catch (error: any) {
+    } catch (error: Error | unknown) {
+      const errorMessage =
+        error instanceof Error ? error.message : "Failed to get suggestions";
       console.error("Error getting suggestions:", error);
-      toast.error(error.message || "Failed to get suggestions");
+      toast.error(errorMessage);
       throw error;
     } finally {
       setIsProcessing(false);
@@ -39,14 +41,16 @@ export default function HomePage() {
 
   const handleRewrite = async (
     content: string,
-    options?: Record<string, any>
+    options?: Record<string, unknown>
   ) => {
     try {
       setIsProcessing(true);
       return await rewriteContent(content, options);
-    } catch (error: any) {
+    } catch (error: Error | unknown) {
+      const errorMessage =
+        error instanceof Error ? error.message : "Failed to rewrite content";
       console.error("Error rewriting content:", error);
-      toast.error(error.message || "Failed to rewrite content");
+      toast.error(errorMessage);
       throw error;
     } finally {
       setIsProcessing(false);
@@ -209,7 +213,10 @@ export default function HomePage() {
                                     const formattedSuggestions =
                                       partialObject.suggestions
                                         .map(
-                                          (s: any) => `
+                                          (s: {
+                                            impact?: string;
+                                            suggestion: string;
+                                          }) => `
                                         <div class="mb-4">
                                           <h5 class="font-medium text-purple-700 dark:text-purple-300">${
                                             s.impact || "Improvement"
@@ -261,8 +268,8 @@ export default function HomePage() {
                               ) {
                                 let content = "";
                                 const reader = (
-                                  result as any
-                                ).textStream.getReader();
+                                  result.textStream as ReadableStream<string>
+                                ).getReader();
 
                                 while (true) {
                                   const { done, value } = await reader.read();

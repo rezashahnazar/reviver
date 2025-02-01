@@ -6,7 +6,7 @@
     "dev": "next dev",
     "clean": "pnpm -r exec rm -rf dist node_modules .next",
     "build": "pnpm build:packages && next build",
-    "build:packages": "pnpm --filter @rezashahnazar/reviver build",
+    "build:packages": "pnpm --filter ai-reviver build",
     "start": "next start",
     "lint": "next lint"
   },
